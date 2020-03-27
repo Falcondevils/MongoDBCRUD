@@ -100,18 +100,29 @@ namespace MongoDBCRUD
 
         // POST api/<controller>
         [HttpPost("SaveBookDetails")]
-        public Book SaveBookDetails(Book book)
+        public string SaveBookDetails([FromBody]Book book)
         {
-            if(book != null && book.Name!=null)
-            database.GetCollection<Book>("Books").InsertOne(book);
-            return book;
+            string result = string.Empty;
+            //Book doc = new Book { Author = book.Author, Name = book.Name, Category = book.Category, Price = Convert.ToDecimal(book.Price) };
+            if (book != null && book.Name != null)
+            //if(!string.IsNullOrEmpty(Name))
+            {
+                database.GetCollection<Book>("Books").InsertOne(book);
+                result = book.ToJson();
+                //result = "Successful";
+            }
+            else
+                result = "Book details were not saved. Either input details are not correct or some system error";
+
+
+                return result;
         }
 
         // DELETE api/<controller>/5
-        [HttpDelete("DeleteBook/{id}")]
-        public bool DeleteBook(string id)
+        [HttpDelete("DeleteBook/{name}")]
+        public bool DeleteBook(string name)
         {
-            database.GetCollection<Book>("Books").DeleteOne(book => book.Id == id);
+            database.GetCollection<Book>("Books").DeleteOne(book => book.Name == name);
             return true;
         }
 
